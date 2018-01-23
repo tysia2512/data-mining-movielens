@@ -1,1 +1,8 @@
-*.csv
+*.csv.ipynb_checkpoints
+ml-20m/genome-scores.csv
+ml-20m/genome-tags.csv
+ml-20m/links.csv
+ml-20m/movies.csv
+ml-20m/ratings.csv
+ml-20m/tags.csv
+.ipynb_checkpoints/
