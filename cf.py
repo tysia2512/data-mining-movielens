@@ -6,10 +6,10 @@ def pearson(x, y):
         x = x.reshape((1, -1))
     if len(y.shape) == 1:
         y = y.reshape((1, -1))
-
-    prsn = np.zeros((x.shape[0], y.shape[0])
-    for xv in enumerate(x):
-        for yv in enumerate(y):
-            prsn[(xv[0], yv[0])] = sp.stats.pearsonr(xv[1], yv[1])
+        
+    prsn = np.zeros((x.shape[0], y.shape[0]))
+    for xi in np.arange(x.shape[0]):
+        for yi in np.arange(y.shape[0]):
+            prsn[xi, yi] = sp.stats.pearsonr(x[xi,:], y[yi,:])[0]
     
     return prsn
