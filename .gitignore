@@ -6,3 +6,11 @@ ml-20m/movies.csv
 ml-20m/ratings.csv
 ml-20m/tags.csv
 .ipynb_checkpoints/
+**/*.aux
+**/*.fdb_latexmk
+**/*.fls
+**/*.log
+**/*.out
+**/*.synctex.gz
+**/*.toc
+.vscode
