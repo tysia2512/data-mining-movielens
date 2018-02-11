@@ -17,7 +17,7 @@
 
 \date{Wrocław, \today}
 \title{\Large\textbf{System rekomendujący na podstawie zestawu danych \textit{MovieLens}}\\Projekt z Eksploracji Danych\\[1ex] \small Prowadzący: Piotr Wnuk-Lipiński}
-\author{Mateusz Lewko, Martyna Siejba} 
+\author{Mateusz Lewko, Martyna Siejba}
 
 \begin{document}
 \maketitle
@@ -26,12 +26,55 @@
 \tableofcontents
 
 \section{Opis problemu}
+Zestaw danych $MovieLens$ zawiera $26$ milionów ocen w skali od $0.5$ do $5.0$ dla $27$ tysięcy filmów. Naszym celem było zbudowanie modelu przewidującego oceny filmów wystawione przez użytkowników, na podstawie pozostałych ich ocen.
 
-\section{Opis danych}
+\section{Pierwsze podejście}
+
+Zdecydowaliśmy się zaimplementować \textit{Collaborative Filtering}, gdyż to podejście działa dla produktów dowolnego typu. Problem \textit{nowego użytkownika} nas nie martwił, ponieważ dane zawierają jedynie użytkowników z co~najmniej dwudziestoma ocenami. Przetestowaliśmy kilka wariantów \textit{Collaborative Filtering}: zwykły \textit{user--user}, \textit{item--item} oraz \textit{user--user} gdzie brany jest pod uwagę fakt, że niektórzy użytkownicy częściej daję wyższą lub niższą ocenę niż inni. Dla porównania, użyliśmy prostego modelu, gdzie przewidywana ocena danego filmu to średnia arytmetyczna wszystkich ocen (z danych testowych).
+
+Na podstawie ocen stworzyliśmy macierz $user\_rating$, gdzie
+$user\_rating_{i}^{j}$ to ocena $j-tego$ filmu wystawiona przez użytkownika numer $i$. 
+We wszystkich podejściach należy zdefiniować miarę podobieństwa między użytkownikami lub filmami. Użyliśmy dwóch najpopularniejszych: odległość kosinusów i wskaźnik Pearsona. Użytkownik jest reprezentowany przez wektor swoich ocen, a film przez wektor ocen użytkowników dla tego filmu. Odległość między dwoma użytkownikami to odległość miedzy odpowiadającymi im wektorami. Analogicznie dla filmów.
+
+Nasz model działał w sposób następujący. W standardowej wersji \textit{user--user}
+przewidywana ocena filmu to średnia ważona ocen innych użytkowników (dla tego filmu). Wagi stanowiły wartości podobieństwa między użytkownikami. W wersji \textit{item-item} sposób był analogiczny. Wynik to była średnia ocen danego użytkownika, z wagami będącymi podobieństwem między filmami.
+
+\section{Rozwinięcie \textit{Collaborative Filtering}}
+
+W kolejnym podejściu wykorzystaliśmy pomysł, że niektórzy użytkownicy zazwyczaj dają wyższe lub niższe oceny niż pozostali. W zwykłym podejściu \textit{user--user}, użytkownik $A$, który lubianym filmom wystawia ocenę $4$ istotnie różni się od użytkownika $B$, który lubianym filmom wystawia ocenę $5$, nawet jeśli podobają im się te same filmy. W rzeczywistości mają podobny gust. Postanowiliśmy wziąć to pod uwagę. Zamiast brać średnią z ocen innych użytkowników wystawionych danemu filmowi, bierzemy średnią ważoną różnic między średnią wszystkich ocen danego użytkownika, a jego oceną dla danego filmu. Tym sposobem skupiamy się na relatywnej ocenie filmu przez innych użytkowników, a nie konkretnej wartości tej oceny. Na końcu należy dodać średnią ocen dla przewidywanego użytkownika. Wagi średniej relatywnych ocen to tak jak wcześniej podobieństwa między użytkownikami. Przetestowaliśmy obie miary podobieństwa.
+
+Ostatni pomysł to sposób na ulepszenie modelu \textit{item--item}. Macierz $user\_rating$, na podstawie której wyliczane jest podobieństwo między filmami jest rzadka, więc wyznaczone podobieństwa można spróbować poprawić. Zestaw danych \textit{MovieLens} zawiera także informacje o gatunkach danego filmu. Wprowadziliśmy dodatkową miarę podobieństwa: liczba gatunków które się pokrywają między dwoma filmami. Ulepszony model dla wersji \textit{item--item} jako wynik predykcji podaje średnią arytmetyczną wyniku z poprzedniego modelu \textit{item--item} oraz z jego analogicznej wersji z nową miarą.
 
 \section{Implementacja}
+Implementacja wszystkich rozwiązań i testowania znajduje się w pliku $movielens-recommender.ipynb$.
+Krótki spis ważniejszych funkcji zawartych w notebooku:
+\begin{enumerate}
+    \item $gen\_test\_data$ -- generowanie danych testowych
+    \item $simple\_mean\_predict$ -- prosty model predykcji, wynik to średnia arytmetyczna ocen
+    \item $item\_based\_predict$ -- podstawowa wersja \textit{item--item} \textit{Collaborative Filtering}
+    \item $user\_based\_predict$ -- podstawowa wersja \textit{user--user} \textit{Collaborative Filtering}
+    \item $item\_based\_with\_genres\_predict$ -- rozszerzona wersja \textit{item--item} z nową miarą odległości
+    \item $user\_relative\_predict$ -- rozszerzona wersja \textit{user--user} \textit{Collaborative Filtering}
+
+\end{enumerate}
+
+\section{Testowanie}
+Z podanych ocen filmów wybraliśmy losowo $25\%$ jako dane testowe. Dane testowe zostały wymazane z macierzy $R$ i zastąpione zerami. Nie kolidowało to z wystawionymi ocenami -- minimalna ocena to $0.5$. Należało jednak uważać przy obliczeniach, aby nie policzyć wyzerowanych elementów. 
+Jakoś modelu sprawdzaliśmy obliczając błąd $RMSE$ dla danych testowych.
 
 \section{Wyniki}
+
+\begin{center}
+\begin{tabular} {ccc}
+\begin{tabular} {|c||c|} \hline
+\multicolumn {2} {|c|} {$RMSE$ dla danych testowych} \\ \hline
+Metoda & Błąd \\ \hline
+średnia arytmetyczna ocen & 0.95028\\ \hline
+podstawowy \textit{user--user}, miara cosinusów & 0.94220 \\ \hline
+podstawowy \textit{item--item}, miara cosinusów & 0.97895 \\ \hline
+\end{tabular}
+\end{tabular}
+\end{center}
 
 \section{Wnioski}
 
