@@ -4,7 +4,6 @@
 
 \usepackage{graphicx}
 \usepackage{caption}
-% \usepackage{subcaption}
 \usepackage{epstopdf}
 
 \usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools}
@@ -60,7 +59,7 @@ Krótki spis ważniejszych funkcji zawartych w notebooku:
 
 \section{Testowanie}
 Z podanych ocen filmów wybraliśmy losowo $25\%$ jako dane testowe. Dane testowe zostały wymazane z macierzy $R$ i zastąpione zerami. Nie kolidowało to z wystawionymi ocenami -- minimalna ocena to $0.5$. Należało jednak uważać przy obliczeniach, aby nie policzyć wyzerowanych elementów. 
-Jakoś modelu sprawdzaliśmy obliczając błąd $RMSE$ dla danych testowych.
+Jakość modelu sprawdzaliśmy obliczając błąd $RMSE$ dla danych testowych.
 
 \section{Wyniki}
 
@@ -71,11 +70,21 @@ Jakoś modelu sprawdzaliśmy obliczając błąd $RMSE$ dla danych testowych.
 Metoda & Błąd \\ \hline
 średnia arytmetyczna ocen & 0.95028\\ \hline
 podstawowy \textit{user--user}, miara cosinusów & 0.94220 \\ \hline
+podstawowy \textit{user--user}, wskaźnik \textit{Pearsona} & 0.94146 \\ \hline
+rozszerzony \textit{user--user}, miara cosinusów & 0.87340 \\ \hline
+rozszerzony \textit{user--user}, wskaźnik \textit{Pearsona} & 0.87265 \\ \hline
 podstawowy \textit{item--item}, miara cosinusów & 0.97895 \\ \hline
+podstawowy \textit{item--item}, wskaźnik \textit{Pearsona} & 0.98414 \\ \hline
+rozszerzony \textit{item--item} & 0.97076 \\ \hline
 \end{tabular}
 \end{tabular}
 \end{center}
 
 \section{Wnioski}
+Rozszerzona wersja \textit{user--user} okazała się dawać najdokładniejsze wyniki (istotnie lepsze od pozostałych). Zapewne dlatego, że pomysł z różnym podejściem użytkowników do systemu ocen, występuje w praktyce. Podstawowy model \textit{user--user} wciąż był lepszy od \textit{item--item} i od modelu testowego.
+
+Wynik modelu \textit{item--item} był najsłabszy i dawał gorsze wyniki niż najprostszy pomysł ze średnią arytmetyczną ocen (testowy model). Głównym powodem była najpewniej jakość miary podobieństwa filmów. Pomysł z zastosowaniem średniej z dwóch miar (gdzie druga to liczba wspólnych gatunków), trochę poprawił wynik.
+
+We wszystkich przypadkach zastosowanie wskaźnika \textit{Pearsona} dla \textit{user--user} dawało trochę lepsze rezultaty (o około $0.001$). Dla \textit{item--item}, wskaźnik \textit{Pearsona} był gorszy o $0.01$.
 
 \end{document}
